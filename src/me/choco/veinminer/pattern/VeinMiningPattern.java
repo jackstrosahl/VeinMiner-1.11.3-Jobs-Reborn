@@ -10,6 +10,7 @@ import org.bukkit.block.Block;
 
 import me.choco.veinminer.api.veinutils.MaterialAlias;
 import me.choco.veinminer.api.veinutils.VeinTool;
+import org.bukkit.entity.Player;
 
 /**
  * Represents a mining algorithm capable of computing which blocks should be broken
@@ -33,7 +34,9 @@ public interface VeinMiningPattern extends Keyed {
 	 * @param alias an alias of the block being broken if one exists. May be null
 	 */
 	public void allocateBlocks(List<Block> blocks, Block origin, VeinTool tool, MaterialAlias alias);
-	
+
+	public void allocateBlocksJobs(List<Block> blocks, Block origin, VeinTool tool, MaterialAlias alias, Player player);
+
 	/**
 	 * Allocate the blocks that should be broken by the vein mining pattern. Note
 	 * that the breaking of the blocks should not be handled by the pattern, but
@@ -56,7 +59,7 @@ public interface VeinMiningPattern extends Keyed {
 	 * Create a new VeinMiningPattern using a custom {@link BlockAllocator}
 	 * 
 	 * @param key the key of the vein mining pattern. Must be unique and not null
-	 * @param blockComputer the computer to allocate breakable blocks. Must not be null
+	 * @param blockAllocator the computer to allocate breakable blocks. Must not be null
 	 * 
 	 * @return the resulting VeinMiningPattern instance
 	 */
@@ -67,9 +70,15 @@ public interface VeinMiningPattern extends Keyed {
 		return new VeinMiningPattern() {
 			@Override
 			public void allocateBlocks(List<Block> blocks, Block origin, VeinTool tool, MaterialAlias alias) {
-				blockAllocator.allocate(blocks, origin, tool, alias);
+				blockAllocator.allocate(blocks, origin, alias, tool.getMaxVeinSize());
 			}
-			
+
+			@Override
+			public void allocateBlocksJobs(List<Block> blocks, Block origin, VeinTool tool, MaterialAlias alias,Player player)
+			{
+				blockAllocator.allocate(blocks,origin,alias,tool.getMaxVeinSizeJobs(player));
+			}
+
 			@Override
 			public NamespacedKey getKey() {
 				return key;

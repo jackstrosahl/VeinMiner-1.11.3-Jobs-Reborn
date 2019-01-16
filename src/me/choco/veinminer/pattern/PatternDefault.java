@@ -11,6 +11,7 @@ import me.choco.veinminer.VeinMiner;
 import me.choco.veinminer.api.veinutils.MaterialAlias;
 import me.choco.veinminer.api.veinutils.VeinTool;
 import me.choco.veinminer.utils.VBlockFace;
+import org.bukkit.entity.Player;
 
 public class PatternDefault implements VeinMiningPattern {
 	
@@ -26,10 +27,19 @@ public class PatternDefault implements VeinMiningPattern {
 		this.plugin = plugin;
 		this.key = new NamespacedKey(plugin, "default");
 	}
-	
+
+	public void allocateBlocksJobs(List<Block> blocks, Block origin, VeinTool tool, MaterialAlias alias, Player player)
+	{
+		allocateBlocks(blocks,origin,alias,tool.getMaxVeinSizeJobs(player));
+	}
+
 	@Override
-	public void allocateBlocks(List<Block> blocks, Block origin, VeinTool tool, MaterialAlias alias) {
-		int maxVeinSize = tool.getMaxVeinSize();
+	public void allocateBlocks(List<Block> blocks, Block origin, VeinTool tool, MaterialAlias alias)
+	{
+		allocateBlocks(blocks, origin, alias, tool.getMaxVeinSize());
+	}
+
+	public void allocateBlocks(List<Block> blocks, Block origin, MaterialAlias alias, int maxVeinSize) {
 		VBlockFace[] facesToMine = getFacesToMine();
 		List<Block> blocksToAdd = new ArrayList<>();
 		

@@ -12,19 +12,21 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 
-import me.konsolas.aac.api.PlayerViolationEvent;
+//import me.konsolas.aac.api.PlayerViolationEvent; Don't own this .jar either
 
 public class AntiCheatSupport implements Listener {
 	
 	private final List<UUID> exemptedUsers = new ArrayList<>();
-	
+
+	/* Don't own this plugin
 	// Prevent Advanced Anti-Cheat to flag VeinMiner users
 	@EventHandler(priority=EventPriority.LOWEST)
 	public void onAACViolation(PlayerViolationEvent event) {
 		if (!exemptedUsers.contains(event.getPlayer().getUniqueId())) return;
 		event.setCancelled(true);
 	}
-	
+	*/
+
 	/** 
 	 * Exempt a user from Advanced Anti Cheat violation
 	 * 

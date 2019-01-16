@@ -18,20 +18,42 @@ IncludeEdges: true
 DisabledWorlds:
 - WorldName
 
+Jobs: true #Only actually enables if the Jobs plugin is loaded.
+
 Tools:
   Pickaxe:
+    Base: 5 #What MaximumVeinSize at Level 0 of the associated Job would have.
+    PerLevel: .25 #How much MaximumVeinSize increases every level.
+    Job: Miner #The job to use for MaximumVeinSize = Base + PerLevel * JobLevel
+
     MaxVeinSize: 64
     UsesDurability: true
   Axe:
+    Base: 2
+    PerLevel: .25
+    Job: Woodcutter
+
     MaxVeinSize: 64
     UsesDurability: true
   Shovel:
+    Base: 50
+    PerLevel: 1
+    Job: Digger
+
     MaxVeinSize: 64
     UsesDurability: true
   Hoe:
+    Base: 10
+    PerLevel: .5
+    Job: Farmer
+
     MaxVeinSize: 64
     UsesDurability: true
   Shears:
+    Base: 5
+    PerLevel: .25
+    Job: Farmer
+
     MaxVeinSize: 64
     UsesDurability: true
 

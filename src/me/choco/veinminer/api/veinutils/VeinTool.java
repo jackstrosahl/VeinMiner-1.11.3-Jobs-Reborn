@@ -5,6 +5,9 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import com.gamingmesh.jobs.Jobs;
+import com.gamingmesh.jobs.container.Job;
+import com.gamingmesh.jobs.container.JobProgression;
 import com.google.common.base.Preconditions;
 
 import org.bukkit.Bukkit;
@@ -12,6 +15,7 @@ import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 
 import me.choco.veinminer.VeinMiner;
+import org.bukkit.entity.Player;
 
 /**
  * Tools recognised by VeinMiner and it's code. Tools are limited to those listed in the enumeration
@@ -106,7 +110,22 @@ public enum VeinTool {
 	public int getMaxVeinSize() {
 		return (this != VeinTool.ALL ? plugin.getConfig().getInt("Tools." + name + ".MaxVeinSize", 64) : 64);
 	}
-	
+
+	public int getMaxVeinSizeJobs(Player player) {
+		//return (this != VeinTool.ALL ? plugin.getConfig().getInt("Tools." + name + ".MaxVeinSize", 64) : 64);
+
+		int max = getMaxVeinSize();
+		String toolPath = "Tools." + name + ".";
+		JobProgression progression = Jobs.getPlayerManager().getJobsPlayer(player).getJobProgression(Jobs.getJob(plugin.getConfig().getString(toolPath+"Job")));
+		if(progression==null) return 1;
+		int level = progression.getLevel();
+		int base = plugin.getConfig().getInt(toolPath+ "Base");
+		double perLevel = plugin.getConfig().getDouble(toolPath+"PerLevel");
+		int out = base + (int)(level*perLevel);
+
+		return Math.min(out,max);
+	}
+
 	/**
 	 * Get whether this vein tool will take durability whilst veinmining or not (Specified in
 	 * configuration file)

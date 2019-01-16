@@ -6,6 +6,7 @@ import org.apache.commons.lang3.EnumUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.block.Block;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -66,14 +67,21 @@ public class BreakBlockListener implements Listener {
 		if ((!VeinBlock.isVeinable(tool, block.getType(), block.getData()) 
 				&& !(VeinBlock.isVeinable(VeinTool.ALL, block.getType(), block.getData()) && player.hasPermission("veinminer.veinmine.all")))) return;
 		if (tool.hasVeinMinerDisabled(player)) return;
-		
 		// TIME TO VEINMINE
 		MaterialAlias alias = this.manager.getAliasFor(block.getType());
 		if (alias == null) alias = this.manager.getAliasFor(block.getType(), block.getData());
 		
 		this.blocks.add(block);
 		VeinMiningPattern pattern = manager.getPatternFor(player);
-		pattern.allocateBlocks(blocks, block, tool, alias);
+
+		if(plugin.isJobsEnabled())
+		{
+			pattern.allocateBlocksJobs(blocks,block,tool,alias,player);
+		}
+		else
+		{
+			pattern.allocateBlocks(blocks, block, tool, alias);
+		}
 		
 		// Fire a new PlayerVeinMineEvent
 		PlayerVeinMineEvent vmEvent = new PlayerVeinMineEvent(player, VeinBlock.getVeinminableBlock(block.getType(), block.getData()), tool, blocks);
@@ -93,9 +101,9 @@ public class BreakBlockListener implements Listener {
 		}
 		if (plugin.isAACEnabled())
 			plugin.getAntiCheatSupport().exemptFromViolation(player);
-		
-		if (plugin.isAntiAuraEnabled())
-			AntiAuraAPI.API.toggleExemptFromFastBreak(player);
+
+		//if (plugin.isAntiAuraEnabled())
+			//AntiAuraAPI.API.toggleExemptFromFastBreak(player);  Don't use this because I don't have this .jar
 		/* Anti Cheat support end */
 		
 		// Actually destroying the allocated blocks
@@ -122,8 +130,8 @@ public class BreakBlockListener implements Listener {
 			if (unexemptNCP) NCPExemptionManager.unexempt(player, CheckType.BLOCKBREAK);
 		if (plugin.isAACEnabled())
 			plugin.getAntiCheatSupport().unexemptFromViolation(player);
-		if (plugin.isAntiAuraEnabled())
-			AntiAuraAPI.API.toggleExemptFromFastBreak(player);
+		//if (plugin.isAntiAuraEnabled())
+			//AntiAuraAPI.API.toggleExemptFromFastBreak(player);  Don't use this because I don't have this .jar
 	}
 	
 }

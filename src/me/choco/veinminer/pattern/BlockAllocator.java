@@ -31,6 +31,6 @@ public interface BlockAllocator {
 	 * 
 	 * @see VeinMiningPattern#allocateBlocks(List, Block, VeinTool, MaterialAlias)
 	 */
-	public void allocate(List<Block> blocks, Block origin, VeinTool tool, MaterialAlias alias);
+	public void allocate(List<Block> blocks, Block origin, MaterialAlias alias, int maxVeinSize);
 	
 }

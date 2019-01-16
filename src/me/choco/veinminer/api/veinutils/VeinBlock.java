@@ -234,12 +234,12 @@ public class VeinBlock {
 		return veinable.stream().anyMatch(b -> b.material == material && (!b.hasSpecficData() || b.data == data) && b.isMineableBy(tool));
 	}
 	
-	/** 
+	/**
 	 * Whether a material is able to be broken using a specific VeinMiner tool
-	 * 
+	 *
 	 * @param tool the tool to check
 	 * @param material the material to check
-	 * 
+	 *
 	 * @return true if it is breakable with VeinMiner
 	 */
 	public static boolean isVeinable(VeinTool tool, Material material) {
