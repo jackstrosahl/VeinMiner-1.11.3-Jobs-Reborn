@@ -113,7 +113,8 @@ public final class BreakBlockListener implements Listener {
         }
 
         VeinMiningPattern pattern = plugin.getVeinMiningPattern();
-        pattern.allocateBlocks(blocks, originVeinBlock, origin, category, toolTemplate, algorithmConfig, manager.getAliasFor(origin));
+        pattern.allocateBlocks(blocks, originVeinBlock, origin, category,
+                toolTemplate, algorithmConfig, manager.getAliasFor(origin), event.getPlayer());
         blocks.removeIf(Block::isEmpty);
         if (blocks.isEmpty()) {
             return;

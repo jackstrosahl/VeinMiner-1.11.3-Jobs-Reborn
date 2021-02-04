@@ -230,3 +230,7 @@ gradle-app.setting
 
 # Gradle Fabric
 **/run/
+
+/VeinMiner-Bukkit/libs/
+/.idea/
+

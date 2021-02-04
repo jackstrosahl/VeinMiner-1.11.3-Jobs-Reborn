@@ -13,6 +13,13 @@ public final class VMConstants {
     public static final String CONFIG_MAX_VEIN_SIZE = "MaxVeinSize";
     public static final String CONFIG_COST = "Cost";
 
+    // Jobs
+    public static final String CONFIG_JOBS_INTEGRATION = "JobsIntegration";
+    public static final String CONFIG_JOBS_SECTION = "Jobs";
+    public static final String CONFIG_JOBS_BASE = "Base";
+    public static final String CONFIG_JOBS_PER_LEVEL = "PerLevel";
+    public static final String CONFIG_JOBS_JOB = "Job";
+
     public static final String CONFIG_DISABLED_WORLDS = "DisabledWorlds";
 
     public static final String CONFIG_HUNGER_HUNGER_MODIFIER = "Hunger.HungerModifier";

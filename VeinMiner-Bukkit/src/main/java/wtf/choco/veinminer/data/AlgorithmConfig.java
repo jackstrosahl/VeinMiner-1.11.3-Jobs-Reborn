@@ -1,5 +1,7 @@
 package wtf.choco.veinminer.data;
 
+import com.gamingmesh.jobs.Jobs;
+import com.gamingmesh.jobs.container.JobProgression;
 import com.google.common.base.Preconditions;
 
 import java.util.HashSet;
@@ -12,9 +14,11 @@ import java.util.UUID;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import wtf.choco.veinminer.VeinMiner;
 import wtf.choco.veinminer.utils.VMConstants;
 
 /**
@@ -29,6 +33,13 @@ public class AlgorithmConfig implements Cloneable {
     private int maxVeinSize = 64;
     private double cost = 0.0D;
     private Set<@NotNull UUID> disabledWorlds = new HashSet<>();
+
+    // Jobs data
+    private boolean jobsEnabled = false;
+    private String job = null;
+    private double jobBase;
+    private double jobPerLevel;
+
 
     /**
      * Construct an AlgorithmConfig using values supplied from the given configuration section and
@@ -45,7 +56,13 @@ public class AlgorithmConfig implements Cloneable {
         this.includeEdges = section.getBoolean(VMConstants.CONFIG_INCLUDE_EDGES, (defaultValues != null) ? defaultValues.includeEdges : includeEdges);
         this.maxVeinSize = section.getInt(VMConstants.CONFIG_MAX_VEIN_SIZE, (defaultValues != null) ? defaultValues.maxVeinSize : maxVeinSize);
         this.cost = section.getDouble(VMConstants.CONFIG_COST, (defaultValues != null) ? defaultValues.cost : cost);
-
+        ConfigurationSection jobsSection = section.getConfigurationSection(VMConstants.CONFIG_JOBS_SECTION);
+        if(jobsSection != null && VeinMiner.getPlugin().isJobsEnabled()) {
+            jobsEnabled = true;
+            job = jobsSection.getString(VMConstants.CONFIG_JOBS_JOB);
+            jobBase = jobsSection.getDouble(VMConstants.CONFIG_JOBS_BASE);
+            jobPerLevel = jobsSection.getDouble(VMConstants.CONFIG_JOBS_PER_LEVEL);
+        }
         List<String> disabledWorlds = section.getStringList(VMConstants.CONFIG_DISABLED_WORLDS);
         if (disabledWorlds.isEmpty() && defaultValues != null) {
             this.disabledWorlds = new HashSet<>(defaultValues.disabledWorlds);
@@ -161,8 +178,20 @@ public class AlgorithmConfig implements Cloneable {
      *
      * @return the maximum vein size
      */
-    public int getMaxVeinSize() {
-        return maxVeinSize;
+    public int getMaxVeinSize(Player player) {
+        if (!jobsEnabled || player == null)
+            return maxVeinSize;
+        JobProgression progression = Jobs.getPlayerManager().getJobsPlayer(player).
+                                                getJobProgression(Jobs.getJob(job));
+        int level = progression.getLevel();
+        int out = (int) (jobBase + level*jobPerLevel);
+
+        return Math.min(out, maxVeinSize);
+    }
+
+    public int getMaxVeinSize()
+    {
+        return getMaxVeinSize(null);
     }
 
     /**

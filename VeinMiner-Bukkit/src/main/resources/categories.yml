@@ -20,6 +20,10 @@
 
 Axe:
   MaxVeinSize: 64
+  Jobs: # Settings for Jobs integration
+    Base: 2 # What MaximumVeinSize at Level 0 of the associated Job would have.
+    PerLevel: .25 # How much MaximumVeinSize increases every level.
+    Job: Woodcutter # The job to use for MaximumVeinSize = Base + PerLevel * JobLevel
   Items:
   - 'minecraft:wooden_axe'
   - 'minecraft:stone_axe'
@@ -30,6 +34,10 @@ Axe:
 
 Hoe:
   MaxVeinSize: 64
+  Jobs:
+    Base: 10
+    PerLevel: .5
+    Job: Farmer
   Items:
   - 'minecraft:wooden_hoe'
   - 'minecraft:stone_hoe'
@@ -40,6 +48,10 @@ Hoe:
 
 Pickaxe:
   MaxVeinSize: 64
+  Jobs:
+    Base: 5
+    PerLevel: .25
+    Job: Miner
   Items:
   - 'minecraft:wooden_pickaxe'
   - 'minecraft:stone_pickaxe'
@@ -50,11 +62,19 @@ Pickaxe:
 
 Shears:
   MaxVeinSize: 64
+  Jobs:
+    Base: 5
+    PerLevel: .25
+    Job: Farmer
   Items:
   - 'minecraft:shears'
 
 Shovel:
   MaxVeinSize: 64
+  Jobs:
+    Base: 50
+    PerLevel: 1
+    Job: Digger
   Items:
   - 'minecraft:wooden_shovel'
   - 'minecraft:stone_shovel'

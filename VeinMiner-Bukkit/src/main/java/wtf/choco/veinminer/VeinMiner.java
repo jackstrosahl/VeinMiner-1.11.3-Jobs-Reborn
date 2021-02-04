@@ -67,6 +67,8 @@ public final class VeinMiner extends JavaPlugin {
 
     private final List<AntiCheatHook> anticheatHooks = new ArrayList<>();
 
+    private boolean jobsEnabled = false;
+
     private VeinMinerManager manager;
     private PatternRegistry patternRegistry;
     private EconomyModifier economyModifier;
@@ -103,6 +105,11 @@ public final class VeinMiner extends JavaPlugin {
         this.categoriesConfig = new ConfigWrapper(this, "categories.yml");
         this.playerDataDirectory = new File(getDataFolder(), "playerdata");
         this.playerDataDirectory.mkdirs();
+        if(getConfig().getBoolean(VMConstants.CONFIG_JOBS_INTEGRATION) &&
+                Bukkit.getPluginManager().isPluginEnabled("Jobs"))
+        {
+            jobsEnabled = true;
+        }
 
         // Pattern registration
         this.patternRegistry = new PatternRegistry();
@@ -326,6 +333,11 @@ public final class VeinMiner extends JavaPlugin {
     @NotNull
     public List<AntiCheatHook> getAnticheatHooks() {
         return Collections.unmodifiableList(anticheatHooks);
+    }
+
+    public boolean isJobsEnabled()
+    {
+        return jobsEnabled;
     }
 
     private void registerAntiCheatHookIfEnabled(@NotNull PluginManager manager, @NotNull String pluginName, @NotNull Supplier<@NotNull ? extends AntiCheatHook> hookSupplier) {

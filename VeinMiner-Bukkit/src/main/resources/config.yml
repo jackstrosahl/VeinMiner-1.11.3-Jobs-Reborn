@@ -7,6 +7,9 @@
 MetricsEnabled: true
 PerformUpdateChecks: true
 
+# Use Jobs levels to control max vein size
+# Only has effect when Jobs is present
+JobsIntegration: true
 DefaultActivationStrategy: SNEAK
 SortBlocklistAlphabetically: true
 RepairFriendlyVeinminer: false

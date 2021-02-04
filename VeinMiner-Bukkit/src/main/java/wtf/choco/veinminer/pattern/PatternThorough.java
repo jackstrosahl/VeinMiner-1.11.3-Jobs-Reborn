@@ -7,6 +7,7 @@ import java.util.Set;
 
 import org.bukkit.NamespacedKey;
 import org.bukkit.block.Block;
+import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -43,8 +44,11 @@ public final class PatternThorough implements VeinMiningPattern {
     }
 
     @Override
-    public void allocateBlocks(@NotNull Set<Block> blocks, @NotNull VeinBlock type, @NotNull Block origin, @NotNull ToolCategory category, @Nullable ToolTemplate template, @NotNull AlgorithmConfig algorithmConfig, @Nullable MaterialAlias alias) {
-        int maxVeinSize = algorithmConfig.getMaxVeinSize();
+    public void allocateBlocks(@NotNull Set<Block> blocks, @NotNull VeinBlock type, @NotNull Block origin,
+                               @NotNull ToolCategory category, @Nullable ToolTemplate template,
+                               @NotNull AlgorithmConfig algorithmConfig, @Nullable MaterialAlias alias,
+                               @Nullable Player player) {
+        int maxVeinSize = algorithmConfig.getMaxVeinSize(player);
         VBlockFace[] facesToMine = PatternUtils.getFacesToMine(algorithmConfig);
 
         while (blocks.size() < maxVeinSize) {
