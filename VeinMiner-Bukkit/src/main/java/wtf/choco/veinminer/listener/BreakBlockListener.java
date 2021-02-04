@@ -16,6 +16,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.metadata.LazyMetadataValue;
+import org.bukkit.metadata.LazyMetadataValue.CacheStrategy;
 import org.jetbrains.annotations.NotNull;
 
 import wtf.choco.veinminer.VeinMiner;
@@ -37,6 +39,7 @@ import wtf.choco.veinminer.utils.NonNullHashSet;
 import wtf.choco.veinminer.utils.Pair;
 import wtf.choco.veinminer.utils.ReflectionUtil;
 import wtf.choco.veinminer.utils.VMConstants;
+import wtf.choco.veinminer.utils.VMEventFactory;
 
 public final class BreakBlockListener implements Listener {
 
@@ -75,9 +78,12 @@ public final class BreakBlockListener implements Listener {
         PlayerPreferences playerData = PlayerPreferences.get(player);
         ActivationStrategy activation = playerData.getActivationStrategy();
         AlgorithmConfig algorithmConfig = (toolTemplate != null) ? toolTemplate.getConfig() : category.getConfig();
-        if (!activation.isValid(player) || algorithmConfig.isDisabledWorld(origin.getWorld())
-                || !player.hasPermission(String.format(VMConstants.PERMISSION_DYNAMIC_VEINMINE, category.getId().toLowerCase()))
-                || playerData.isVeinMinerDisabled(category) || !ItemValidator.isValid(item, category)) {
+        if (!activation.isValid(player)
+                || !category.hasPermission(player)
+                || manager.isDisabledGameMode(player.getGameMode())
+                || playerData.isVeinMinerDisabled(category)
+                || algorithmConfig.isDisabledWorld(origin.getWorld())
+                || !ItemValidator.isValid(item, category)) {
             return;
         }
 
@@ -121,17 +127,19 @@ public final class BreakBlockListener implements Listener {
         }
 
         // Fire a new PlayerVeinMineEvent
-        PlayerVeinMineEvent vmEvent = new PlayerVeinMineEvent(player, originVeinBlock, item, category, blocks, pattern);
-        Bukkit.getPluginManager().callEvent(vmEvent);
-        if (vmEvent.isCancelled() || blocks.isEmpty()) {
+        PlayerVeinMineEvent veinmineEvent = VMEventFactory.callPlayerVeinMineEvent(player, originVeinBlock, item, category, blocks, pattern);
+        if (veinmineEvent.isCancelled() || blocks.isEmpty()) {
             return;
         }
 
         // Flag all blocks as being vein mined
-        blocks.forEach(block -> block.setMetadata(VMConstants.METADATA_KEY_TO_BE_VEINMINED, new FixedMetadataValue(plugin, true)));
+        blocks.forEach(block -> {
+            block.setMetadata(VMConstants.METADATA_KEY_TO_BE_VEINMINED, new FixedMetadataValue(plugin, true));
+            block.setMetadata(VMConstants.METADATA_KEY_VEINMINER_SOURCE, new LazyMetadataValue(plugin, CacheStrategy.CACHE_ETERNALLY, origin::getLocation));
+        });
 
         // Anticheat support
-        List<AntiCheatHook> hooks = plugin.getAnticheatHooks();
+        List<@NotNull AntiCheatHook> hooks = plugin.getAnticheatHooks();
         hooks.forEach(h -> h.exempt(player));
 
         // Actually destroying the allocated blocks
@@ -179,7 +187,10 @@ public final class BreakBlockListener implements Listener {
             }
         }
 
-        blocks.forEach(block -> block.removeMetadata(VMConstants.METADATA_KEY_TO_BE_VEINMINED, plugin));
+        blocks.forEach(block -> {
+            block.removeMetadata(VMConstants.METADATA_KEY_TO_BE_VEINMINED, plugin);
+            block.removeMetadata(VMConstants.METADATA_KEY_VEINMINER_SOURCE, plugin);
+        });
 
         // VEINMINER - DONE
 

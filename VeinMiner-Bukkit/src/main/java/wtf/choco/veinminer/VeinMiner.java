@@ -36,6 +36,7 @@ import wtf.choco.veinminer.economy.EmptyEconomyModifier;
 import wtf.choco.veinminer.economy.VaultBasedEconomyModifier;
 import wtf.choco.veinminer.integration.WorldGuardIntegration;
 import wtf.choco.veinminer.listener.BreakBlockListener;
+import wtf.choco.veinminer.listener.ItemCollectionListener;
 import wtf.choco.veinminer.listener.PlayerDataListener;
 import wtf.choco.veinminer.metrics.StatTracker;
 import wtf.choco.veinminer.network.PluginMessageProtocol;
@@ -65,7 +66,7 @@ public final class VeinMiner extends JavaPlugin {
 
     private static VeinMiner instance;
 
-    private final List<AntiCheatHook> anticheatHooks = new ArrayList<>();
+    private final List<@NotNull AntiCheatHook> anticheatHooks = new ArrayList<>();
 
     private boolean jobsEnabled = false;
 
@@ -96,7 +97,7 @@ public final class VeinMiner extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        instance = this;
+        VeinMiner.instance = this;
         this.veinMiningPattern = PatternExpansive.get();
         this.manager = new VeinMinerManager(this);
 
@@ -121,14 +122,15 @@ public final class VeinMiner extends JavaPlugin {
         // Enable anticheat hooks if required
         PluginManager manager = Bukkit.getPluginManager();
         this.registerAntiCheatHookIfEnabled(manager, "AAC5", AntiCheatHookAAC::new);
-        this.registerAntiCheatHookIfEnabled(manager, "AntiAura", AntiCheatHookAntiAura::new);
+        this.registerAntiCheatHookIfEnabled(manager, "AntiAura", () -> new AntiCheatHookAntiAura(this));
         this.registerAntiCheatHookIfEnabled(manager, "Matrix", AntiCheatHookMatrix::new);
-        this.registerAntiCheatHookIfEnabled(manager, "NoCheatPlus", AntiCheatHookNCP::new);
-        this.registerAntiCheatHookIfEnabled(manager, "Spartan", AntiCheatHookSpartan::new);
+        this.registerAntiCheatHookIfEnabled(manager, "NoCheatPlus", () -> new AntiCheatHookNCP(this));
+        this.registerAntiCheatHookIfEnabled(manager, "Spartan", () -> new AntiCheatHookSpartan(this));
 
         // Register events
         this.getLogger().info("Registering events");
         manager.registerEvents(new BreakBlockListener(this), this);
+        manager.registerEvents(new ItemCollectionListener(this), this);
         manager.registerEvents(new PlayerDataListener(this), this);
 
         // Register commands
@@ -331,7 +333,7 @@ public final class VeinMiner extends JavaPlugin {
      * @return all anticheat hooks
      */
     @NotNull
-    public List<AntiCheatHook> getAnticheatHooks() {
+    public List<@NotNull AntiCheatHook> getAnticheatHooks() {
         return Collections.unmodifiableList(anticheatHooks);
     }
 

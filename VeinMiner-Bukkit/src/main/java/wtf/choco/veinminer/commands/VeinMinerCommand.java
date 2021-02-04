@@ -74,6 +74,7 @@ public final class VeinMinerCommand implements TabExecutor {
             manager.loadToolCategories();
             manager.loadVeinableBlocks();
             manager.loadMaterialAliases();
+            manager.loadDisabledGameModes();
 
             sender.sendMessage(ChatColor.GREEN + "VeinMiner configuration successfully reloaded.");
         }
@@ -223,7 +224,6 @@ public final class VeinMinerCommand implements TabExecutor {
                 }
 
                 this.plugin.saveConfig();
-                this.plugin.reloadConfig();
             }
 
             // /veinminer blocklist <category> remove
@@ -262,7 +262,6 @@ public final class VeinMinerCommand implements TabExecutor {
                 }
 
                 this.plugin.saveConfig();
-                this.plugin.reloadConfig();
             }
 
             // /veinminer blocklist <category> list
@@ -561,8 +560,15 @@ public final class VeinMinerCommand implements TabExecutor {
                     suggestions = StringUtil.copyPartialMatches(materialArg, BLOCK_KEYS, new ArrayList<>());
 
                     ToolCategory category = ToolCategory.get(args[1]);
+
                     if (category != null) {
-                        category.getBlocklist().forEach(b -> impossibleSuggestions.add(b.getType().getKey().toString()));
+                        BlockList blocklist = category.getBlocklist();
+
+                        if (!blocklist.containsWildcard()) {
+                            suggestions.add("*");
+                        }
+
+                        blocklist.forEach(b -> impossibleSuggestions.add(b.getType().getKey().toString()));
                     }
                 }
                 else if (args[0].equalsIgnoreCase("toollist")) {
@@ -641,7 +647,7 @@ public final class VeinMinerCommand implements TabExecutor {
 
     private boolean canVeinMine(Player player) {
         for (ToolCategory category : ToolCategory.getAll()) {
-            if (player.hasPermission(String.format(VMConstants.PERMISSION_DYNAMIC_VEINMINE, category.getId().toLowerCase()))) {
+            if (category.hasPermission(player)) {
                 return true;
             }
         }
