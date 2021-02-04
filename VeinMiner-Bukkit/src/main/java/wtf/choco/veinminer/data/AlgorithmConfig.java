@@ -183,6 +183,7 @@ public class AlgorithmConfig implements Cloneable {
             return maxVeinSize;
         JobProgression progression = Jobs.getPlayerManager().getJobsPlayer(player).
                                                 getJobProgression(Jobs.getJob(job));
+        if(progression==null) return 1;
         int level = progression.getLevel();
         int out = (int) (jobBase + level*jobPerLevel);
 
