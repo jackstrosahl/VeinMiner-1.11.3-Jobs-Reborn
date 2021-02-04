@@ -102,6 +102,10 @@ public class AlgorithmConfig implements Cloneable {
         this.maxVeinSize = config.maxVeinSize;
         this.cost = config.cost;
         this.disabledWorlds = new HashSet<>(config.disabledWorlds);
+        this.jobsEnabled = config.jobsEnabled;
+        this.job = config.job;
+        this.jobBase = config.jobBase;
+        this.jobPerLevel = config.jobPerLevel;
     }
 
     /**
